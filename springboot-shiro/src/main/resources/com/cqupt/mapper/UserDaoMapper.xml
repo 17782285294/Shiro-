@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cqupt.shiro.dao.UserDao">
+    <insert id="save" parameterType="User" keyProperty="id" useGeneratedKeys="true">
+        insert into user values(#{id},#{username},#{password},#{salt})
+    </insert>
+
+    <select id="findByUserName" resultType="User" parameterType="String">
+        select * from user where username=#{username}
+    </select>
+    
+    <select id="findRolesByUserName" parameterType="String" resultType="Role">
+        SELECT * FROM role WHERE
+	    id IN ( SELECT roleId FROM user_role LEFT JOIN USER ON user_role.userId = USER.id WHERE USER.username = #{username} )
+    </select>
+    <select id="findPermsByRoleId" resultType="Permission" parameterType="Integer">
+        SELECT permission.* from permission left join role_permission on permission.id=role_permission.permissionId
+        where permission.id=#{id}
+    </select>
+</mapper>
